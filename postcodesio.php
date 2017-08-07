@@ -149,3 +149,16 @@ function postcodesio_civicrm_navigationMenu(&$menu) {
   ));
   _postcodesio_civix_navigationMenu($menu);
 } // */
+
+/**
+ * Implements hook_civicrm_searchTasks().
+ */
+function emailamender_civicrm_searchTasks($objectType, &$tasks) {
+  if ($objectType == 'contact') {
+    $tasks[] = array(
+      'title'  => ts('Address - lookup Districts'),
+      'class'  => 'CRM_Postcodesio_Form_LookupDistricts',
+      'result' => TRUE,
+    );
+  }
+}
