@@ -37,10 +37,16 @@ class CRM_Postcodesio {
 
   /**
    * Used in the context of a search result action.
-   * @param type $contactId
+   *
+   * @param int $contactId
    */
-  public function setDistrictsForContactsAddresses($contactId) {
-    
+  public function setAddressDistrictsForContact($contactId) {
+
+    $addresses = civicrm_api3('Address', 'get', array('contact_id' => $contactId));
+
+    foreach($addresses['values'] as $eachAddress) {
+      $this->setDistrictForAddress($eachAddress['id']);
+    }
   }
   
 }

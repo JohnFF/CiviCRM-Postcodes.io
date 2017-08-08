@@ -156,8 +156,8 @@ function postcodesio_civicrm_navigationMenu(&$menu) {
 function postcodesio_civicrm_searchTasks($objectType, &$tasks) {
   if ($objectType == 'contact') {
     $tasks[] = array(
-      'title'  => ts('Address - lookup Districts'),
-      'class'  => 'CRM_Postcodesio_Form_LookupDistricts',
+      'title'  => ts('Address - Lookup Districts'),
+      'class'  => 'CRM_Postcodesio_Form_Task_LookupDistricts',
       'result' => TRUE,
     );
   }

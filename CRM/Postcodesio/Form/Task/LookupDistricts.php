@@ -5,21 +5,13 @@
  *
  * @see https://wiki.civicrm.org/confluence/display/CRMDOC/QuickForm+Reference
  */
-class CRM_Postcodesio_Form_LookupDistricts extends CRM_Core_Form {
+class CRM_Postcodesio_Form_Task_LookupDistricts extends CRM_Contact_Form_Task {
   public function buildQuickForm() {
 
-    // add form elements
-    $this->add(
-      'select', // field type
-      'favorite_color', // field name
-      'Favorite Color', // field label
-      $this->getColorOptions(), // list of options
-      TRUE // is required
-    );
     $this->addButtons(array(
       array(
         'type' => 'submit',
-        'name' => ts('Submit'),
+        'name' => ts('Lookup districts for these contacts\' addresses.'),
         'isDefault' => TRUE,
       ),
     ));
@@ -30,26 +22,15 @@ class CRM_Postcodesio_Form_LookupDistricts extends CRM_Core_Form {
   }
 
   public function postProcess() {
-    $values = $this->exportValues();
-    $options = $this->getColorOptions();
-    CRM_Core_Session::setStatus(ts('You picked color "%1"', array(
-      1 => $options[$values['favorite_color']],
-    )));
-    parent::postProcess();
-  }
+    $postcodesioProcessor = new CRM_Postcodesio();
 
-  public function getColorOptions() {
-    $options = array(
-      '' => ts('- select -'),
-      '#f00' => ts('Red'),
-      '#0f0' => ts('Green'),
-      '#00f' => ts('Blue'),
-      '#f0f' => ts('Purple'),
-    );
-    foreach (array('1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e') as $f) {
-      $options["#{$f}{$f}{$f}"] = ts('Grey (%1)', array(1 => $f));
+    foreach($this->_contactIds as $eachContactId) {
+      $postcodesioProcessor->setAddressDistrictsForContact($eachContactId);
     }
-    return $options;
+
+    CRM_Core_Session::setStatus(ts('Finished looking up districts for addresses.'));
+
+    parent::postProcess();
   }
 
   /**

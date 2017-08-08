@@ -2,7 +2,7 @@
 <menu>
   <item>
     <path>civicrm/postcodesio/lookupdistricts</path>
-    <page_callback>CRM_Postcodesio_Form_LookupDistricts</page_callback>
+    <page_callback>CRM_Postcodesio_Form_Task_LookupDistricts</page_callback>
     <title>LookupDistricts</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
