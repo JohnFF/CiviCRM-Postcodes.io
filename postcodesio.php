@@ -153,7 +153,7 @@ function postcodesio_civicrm_navigationMenu(&$menu) {
 /**
  * Implements hook_civicrm_searchTasks().
  */
-function emailamender_civicrm_searchTasks($objectType, &$tasks) {
+function postcodesio_civicrm_searchTasks($objectType, &$tasks) {
   if ($objectType == 'contact') {
     $tasks[] = array(
       'title'  => ts('Address - lookup Districts'),
@@ -161,4 +161,17 @@ function emailamender_civicrm_searchTasks($objectType, &$tasks) {
       'result' => TRUE,
     );
   }
+}
+
+function postcodesio_civicrm_post($op, $objectName, $id, &$params) {
+  if ($objectName != 'Address'){
+    return;
+  }
+
+  if (!in_array($op, array('create'))) {
+    return;
+  }
+
+  $postcodesioProcessor = new CRM_Postcodesio();
+  $postcodesioProcessor->setDistrictForAddress($id);
 }
