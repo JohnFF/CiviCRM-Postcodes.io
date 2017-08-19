@@ -156,8 +156,18 @@ function postcodesio_civicrm_navigationMenu(&$menu) {
 function postcodesio_civicrm_searchTasks($objectType, &$tasks) {
   if ($objectType == 'contact') {
     $tasks[] = array(
-      'title'  => ts('Address - Lookup Districts'),
+      'title'  => ts('Postcodes.io - Lookup Districts'),
       'class'  => 'CRM_Postcodesio_Form_Task_LookupDistricts',
+      'result' => TRUE,
+    );
+    $tasks[] = array(
+      'title'  => ts('Postcodes.io - Lookup Geocodes'),
+      'class'  => 'CRM_Postcodesio_Form_Task_LookupGeocodes',
+      'result' => TRUE,
+    );
+    $tasks[] = array(
+      'title'  => ts('Postcodes.io - Lookup Counties'),
+      'class'  => 'CRM_Postcodesio_Form_Task_LookupCounties',
       'result' => TRUE,
     );
   }

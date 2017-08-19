@@ -6,4 +6,16 @@
     <title>LookupDistricts</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/postcodesio/lookupgeocodes</path>
+    <page_callback>CRM_Postcodesio_Form_Task_LookupGeocodes</page_callback>
+    <title>LookupGeocode</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/postcodesio/lookupcounties</path>
+    <page_callback>CRM_Postcodesio_Form_Task_LookupCounties</page_callback>
+    <title>LookupCounty</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
