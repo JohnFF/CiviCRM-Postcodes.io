@@ -2,7 +2,7 @@
 <extension key="com.civifirst.postcodesio" type="module">
   <file>postcodesio</file>
   <name>Postcodes.io</name>
-  <description>Provides functions to look up UK address meta-data from Postcodes.io. Currently this looks up: the 'admin district' of an address, the geolocation, and the county.</description>
+  <description>Provides functions to look up UK address meta-data from Postcodes.io. Currently this looks up: the 'admin district' of an address, the geolocation, and the county. To use, go to a search results page, and look for Postcodes.io</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>John Kirk</author>
