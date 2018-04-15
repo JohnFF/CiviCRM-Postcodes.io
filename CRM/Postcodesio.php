@@ -17,8 +17,8 @@ class CRM_Postcodesio {
    * @param int $addressId
    * @return array
    */
-  private function getData($address) {
-    $requestUrl = 'https://api.postcodes.io/postcodes/' . $address['postal_code'];
+  public static function getData($postCode) {
+    $requestUrl = 'https://api.postcodes.io/postcodes/' . $postCode;
 
     $postcodesioResults = CRM_Utils_HttpClient::singleton()->get($requestUrl);
     return json_decode($postcodesioResults[1], TRUE);
@@ -32,7 +32,7 @@ class CRM_Postcodesio {
   public function setDistrictForAddress($addressId) {
     $address = civicrm_api3('address', 'getsingle', array('id' => $addressId));
 
-    $decodedResults = $this->getData($address);
+    $decodedResults = $this->getData($address['postal_code']);
 
     if ($decodedResults['status'] != 200) {
       return;
@@ -52,7 +52,7 @@ class CRM_Postcodesio {
   public function setGeocodesForAddress($addressId, $override) {
     $address = civicrm_api3('address', 'getsingle', array('id' => $addressId));
 
-    $decodedResults = $this->getData($address);
+    $decodedResults = $this->getData($address['postal_code']);
 
     if ($decodedResults['status'] != 200) {
       return;
@@ -81,7 +81,7 @@ class CRM_Postcodesio {
   public function setCounty($addressId, $override) {
     $address = civicrm_api3('address', 'getsingle', array('id' => $addressId));
 
-    $decodedResults = $this->getData($address);
+    $decodedResults = $this->getData($address['postal_code']);
 
     if ($decodedResults['status'] != 200) {
       return;
