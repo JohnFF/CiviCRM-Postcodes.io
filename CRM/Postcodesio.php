@@ -1,6 +1,8 @@
 <?php
 
 class CRM_Postcodesio {
+  const ERROR_CODE_NO_RESULTS = 1000;
+    
   private $districtCustomFieldApiKey;
 
   public function __construct() {
@@ -15,13 +17,20 @@ class CRM_Postcodesio {
   /**
    *
    * @param int $addressId
+   * @param bool $assertIfNoResults throw a CRM_Exception if there are no results.
    * @return array
    */
-  public static function getData($postCode) {
+  public static function getData($postCode, $assertIfNoResults = FALSE) {
     $requestUrl = 'https://api.postcodes.io/postcodes/' . $postCode;
 
     $postcodesioResults = CRM_Utils_HttpClient::singleton()->get($requestUrl);
-    return json_decode($postcodesioResults[1], TRUE);
+    $decodedPostcodesioResults = json_decode($postcodesioResults[1], TRUE);
+
+    if (200 != $decodedPostcodesioResults['status'] && $assertIfNoResults) {
+      throw new CRM_Exception('No results found for input postcode.', self::ERROR_CODE_INVALID_POSTCODE);
+    }
+
+    return $decodedPostcodesioResults;
   }
 
   /**
