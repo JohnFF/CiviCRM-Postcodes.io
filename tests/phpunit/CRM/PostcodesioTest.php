@@ -4,58 +4,90 @@ use CRM_Postcodesio_ExtensionUtil as E;
 use Civi\Test\EndToEndInterface;
 
 /**
- * FIXME - Add test description.
- *
- * Tips:
- *  - The global variable $_CV has some properties which may be useful, such as:
- *    CMS_URL, ADMIN_USER, ADMIN_PASS, ADMIN_EMAIL, DEMO_USER, DEMO_PASS, DEMO_EMAIL.
- *  - To spawn a new CiviCRM thread and execute an API call or PHP code, use cv(), e.g.
- *      cv('api system.flush');
- *      $data = cv('eval "return Civi::settings()->get(\'foobar\')"');
- *      $dashboardUrl = cv('url civicrm/dashboard');
- *  - This template uses the most generic base-class, but you may want to use a more
- *    powerful base class, such as \PHPUnit_Extensions_SeleniumTestCase or
- *    \PHPUnit_Extensions_Selenium2TestCase.
- *    See also: https://phpunit.de/manual/4.8/en/selenium.html
+ * Tests the main CRM_Postcodesio class.
  *
  * @group e2e
  * @see cv
  */
 class CRM_PostcodesioTest extends \PHPUnit_Framework_TestCase implements EndToEndInterface {
 
+  private $testContactId;
+
   public static function setUpBeforeClass() {
-    // See: https://github.com/civicrm/org.civicrm.testapalooza/blob/master/civi-test.md
-
-    // Example: Install this extension. Don't care about anything else.
     \Civi\Test::e2e()->installMe(__DIR__)->apply();
-
-    // Example: Uninstall all extensions except this one.
-    // \Civi\Test::e2e()->uninstall('*')->installMe(__DIR__)->apply();
-
-    // Example: Install only core civicrm extensions.
-    // \Civi\Test::e2e()->uninstall('*')->install('org.civicrm.*')->apply();
   }
 
   public function setUp() {
     parent::setUp();
+
+    $testContactDetails = civicrm_api3('Contact', 'create', array(
+      'contact_type' => 'Individual',
+      'first_name' => 'Test for CRM_Postcodesio',
+      'last_name' => 'CiviFirst',
+    ));
+
+    $this->testContactId = $testContactDetails['id'];
   }
 
   public function tearDown() {
     parent::tearDown();
   }
 
-  /**
-   * Example: Test that a version is returned.
-   */
-  public function testWellFormedVersion() {
-    $this->assertRegExp('/^([0-9\.]|alpha|beta)*$/', \CRM_Utils_System::version());
+
+  public function testgetData() {
+    // Valid results.
+    $validResults = CRM_Postcodesio::getData('SE1 2LP');
+    $this->assertEquals(200, $validResults['status']);
+    $this->assertEquals(-0.076035, $validResults['result'][longitude]);
+    $this->assertEquals(51.50266, $validResults['result'][latitude]);
+
+    // Invalid results.
+    $validResults = CRM_Postcodesio::getData('Invalid');
+    $this->assertEquals(404, $validResults['status']);
+
+
+    // Invalid results with Exception.
+    try {
+      $validResults = CRM_Postcodesio::getData('Invalid', TRUE);
+      $this->fail('Should have asserted.');
+    }
+    catch (Exception $exception) {
+      $this->assertEquals(CRM_Postcodesio::ERROR_CODE_NO_RESULTS, $exception->getCode());
+    }
   }
 
-  /**
-   * Example: Test that we're using a real CMS (Drupal, WordPress, etc).
-   */
-  public function testWellFormedUF() {
-    $this->assertRegExp('/^(Drupal|Backdrop|WordPress|Joomla)/', CIVICRM_UF);
+  public function testSetDistrictForAddress() {
+    $testAddress = $this->getNewTestAddress();
+    $postcodesIo = new CRM_Postcodesio();
+    $postcodesIo->setDistrictForAddress($testAddress['id']);
+    $this->assertEquals('Westminster', $this->getTestAddressValue($testAddress['id'], $postcodesIo->getDistrictCustomFieldApiKey()));
   }
 
+  public function testSetGeocodesForAddress() {
+    $testAddress = $this->getNewTestAddress();
+    $postcodesIo = new CRM_Postcodesio();
+    $postcodesIo->setGeocodesForAddress($testAddress['id'], FALSE);
+    $this->assertEquals(-0.138861, $this->getTestAddressValue($testAddress['id'], 'geo_code_1'));
+    $this->assertEquals(51.495076, $this->getTestAddressValue($testAddress['id'], 'geo_code_2'));
+  }
+
+  public function getNewTestAddress() {
+    return civicrm_api3('address', 'create', array(
+      'address_line_1' => 'Westminster Cathedral',
+      'address_line_2' => '42 Francis St',
+      'location_type_id' => 1,
+      'city' => 'London',
+      'postal_code' => 'SW1P 1QW',
+      'contact_id' => $this->testContactId,
+    ));
+  }
+
+  public function getTestAddressValue($addressId, $returnValue) {
+    $returnValues = civicrm_api3('Address', 'getvalue', array(
+      'id' => $addressId,
+      'return' => $returnValue,
+    ));
+
+    return $returnValues;
+  }
 }

@@ -27,7 +27,7 @@ class CRM_Postcodesio {
     $decodedPostcodesioResults = json_decode($postcodesioResults[1], TRUE);
 
     if (200 != $decodedPostcodesioResults['status'] && $assertIfNoResults) {
-      throw new CRM_Exception('No results found for input postcode.', self::ERROR_CODE_INVALID_POSTCODE);
+      throw new CRM_Exception('No results found for input postcode.', self::ERROR_CODE_NO_RESULTS);
     }
 
     return $decodedPostcodesioResults;
@@ -154,6 +154,10 @@ class CRM_Postcodesio {
     foreach ($addresses['values'] as $eachAddress) {
       $this->setGeocodesForAddress($eachAddress['id'], $override);
     }
+  }
+
+  public function getDistrictCustomFieldApiKey() {
+    return $this->districtCustomFieldApiKey;
   }
 
 }
