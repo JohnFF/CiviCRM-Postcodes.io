@@ -2,7 +2,7 @@
 
 class CRM_Postcodesio {
   const ERROR_CODE_NO_RESULTS = 1000;
-    
+
   private $districtCustomFieldApiKey;
 
   public function __construct() {
@@ -16,7 +16,7 @@ class CRM_Postcodesio {
 
   /**
    *
-   * @param int $addressId
+   * @param string $postCode
    * @param bool $assertIfNoResults throw a CRM_Exception if there are no results.
    * @return array
    */
@@ -49,7 +49,7 @@ class CRM_Postcodesio {
 
     civicrm_api3('Address', 'create', array(
       'id' => $addressId,
-      $this->districtCustomFieldApiKey => $decodedResults['result']['admin_district']
+      $this->districtCustomFieldApiKey => $decodedResults['result']['admin_district'],
     ));
   }
 
@@ -84,10 +84,10 @@ class CRM_Postcodesio {
 
   /**
    *
-   * @param type $addressId
-   * @param type $override
+   * @param int $addressId
+   * @param bool $overwriteCurrentCounty
    */
-  public function setCounty($addressId, $override) {
+  public function setCounty($addressId, $overwriteCurrentCounty) {
     $address = civicrm_api3('address', 'getsingle', array('id' => $addressId));
 
     $decodedResults = $this->getData($address['postal_code']);
@@ -96,7 +96,7 @@ class CRM_Postcodesio {
       return;
     }
 
-    if ($override == FALSE && !empty($address['county_id'])) {
+    if ($overwriteCurrentCounty == FALSE && !empty($address['county_id'])) {
       return;
     }
 
@@ -125,7 +125,7 @@ class CRM_Postcodesio {
 
     $addresses = civicrm_api3('Address', 'get', array('contact_id' => $contactId));
 
-    foreach($addresses['values'] as $eachAddress) {
+    foreach ($addresses['values'] as $eachAddress) {
       $this->setDistrictForAddress($eachAddress['id']);
     }
   }
@@ -138,7 +138,7 @@ class CRM_Postcodesio {
   public function setAddressCountiesForContact($contactId, $override = FALSE) {
     $addresses = civicrm_api3('Address', 'get', array('contact_id' => $contactId));
 
-    foreach($addresses['values'] as $eachAddress) {
+    foreach ($addresses['values'] as $eachAddress) {
       $this->setCounty($eachAddress['id'], $override);
     }
   }
@@ -151,7 +151,7 @@ class CRM_Postcodesio {
   public function setAddressGeocodesForContact($contactId, $override = FALSE) {
     $addresses = civicrm_api3('Address', 'get', array('contact_id' => $contactId));
 
-    foreach($addresses['values'] as $eachAddress) {
+    foreach ($addresses['values'] as $eachAddress) {
       $this->setGeocodesForAddress($eachAddress['id'], $override);
     }
   }
